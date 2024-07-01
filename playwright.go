@@ -155,43 +155,43 @@ func (p *Playwright) Focus(selector string, opts playwright.PageFocusOptions) {
 }
 
 // Fill wrapper around playwright fill page function that takes in a selector, text, and a set of options
-func (p *Playwright) Fill(selector string, filledString string, opts playwright.FrameFillOptions) {
-	if err := p.Page.Fill(selector, filledString, opts); err != nil {
+func (p *Playwright) Fill(selector string, filledString string, opts playwright.LocatorFillOptions) {
+	if err := p.Page.Locator(selector).Fill(filledString, opts); err != nil {
 		log.Fatalf("error with fill: %v", err)
 	}
 }
 
 // SelectOptions wrapper around playwright selectOptions page function that takes in a selector, values, and a set of options
-func (p *Playwright) SelectOptions(selector string, values playwright.SelectOptionValues, opts playwright.FrameSelectOptionOptions) {
-	_, err := p.Page.SelectOption(selector, values, opts)
+func (p *Playwright) SelectOptions(selector string, values playwright.SelectOptionValues, opts playwright.LocatorSelectOptionOptions) {
+	_, err := p.Page.Locator(selector).SelectOption(values, opts)
 	if err != nil {
 		log.Fatalf("error selecting the option: %v", err)
 	}
 }
 
 // Check wrapper around playwright check page function that takes in a selector and a set of options
-func (p *Playwright) Check(selector string, opts playwright.FrameCheckOptions) {
-	if err := p.Page.Check(selector, opts); err != nil {
+func (p *Playwright) Check(selector string, opts playwright.LocatorCheckOptions) {
+	if err := p.Page.Locator(selector).Check(opts); err != nil {
 		log.Fatalf("error with checking the field: %v", err)
 	}
 }
 
 // Uncheck wrapper around playwright uncheck page function that takes in a selector and a set of options
-func (p *Playwright) Uncheck(selector string, opts playwright.FrameUncheckOptions) {
-	if err := p.Page.Uncheck(selector, opts); err != nil {
+func (p *Playwright) Uncheck(selector string, opts playwright.LocatorUncheckOptions) {
+	if err := p.Page.Locator(selector).Uncheck(opts); err != nil {
 		log.Fatalf("error with unchecking the field: %v", err)
 	}
 }
 
 // DragAndDrop wrapper around playwright draganddrop page function that takes in two selectors(source and target) and a set of options
-func (p *Playwright) DragAndDrop(sourceSelector string, targetSelector string, opts playwright.FrameDragAndDropOptions) {
+func (p *Playwright) DragAndDrop(sourceSelector string, targetSelector string, opts playwright.PageDragAndDropOptions) {
 	if err := p.Page.DragAndDrop(sourceSelector, targetSelector, opts); err != nil {
 		log.Fatalf("error with drag and drop: %v", err)
 	}
 }
 
 // Evaluate wrapper around playwright evaluate page function that takes in an expresion and a set of options and evaluates the expression/function returning the resulting information.
-func (p *Playwright) Evaluate(expression string, opts playwright.PageEvaluateOptions) interface{} {
+func (p *Playwright) Evaluate(expression string, opts interface{}) interface{} {
 	returnedValue, err := p.Page.Evaluate(expression, opts)
 	if err != nil {
 		log.Fatalf("error evaluating the expression: %v", err)
@@ -247,7 +247,7 @@ func (p *Playwright) FirstInputDelay() uint64 {
 }
 
 // Cookies wrapper around playwright cookies fetch function
-func (p *Playwright) Cookies() []*playwright.BrowserContextCookiesResult {
+func (p *Playwright) Cookies() []playwright.Cookie {
 	cookies, err := p.cookies()
 	if err != nil {
 		log.Fatalf("error with getting the cookies: %v", err)
@@ -282,7 +282,7 @@ func (p *Playwright) closeBrowser() error {
 }
 
 // cookies returns the cookies from the browser context or from browser persistent context
-func (p *Playwright) cookies() ([]*playwright.BrowserContextCookiesResult, error) {
+func (p *Playwright) cookies() ([]playwright.Cookie, error) {
 	if p.Browser != nil && len(p.Browser.Contexts()) > 0 {
 		return p.Browser.Contexts()[0].Cookies()
 	}
